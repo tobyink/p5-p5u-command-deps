@@ -7,7 +7,7 @@ use P5U-command;
 
 BEGIN {
 	$P5U::Command::Deps::AUTHORITY = 'cpan:TOBYINK';
-	$P5U::Command::Deps::VERSION   = '0.001';
+	$P5U::Command::Deps::VERSION   = '0.002';
 }
 
 use constant abstract      => q  <scan Perl source code for dependencies>;
@@ -32,14 +32,19 @@ sub execute
 	
 	my @files = map {
 		-d $_
-			? "Path::Class::Rule"->new->perl_file->all($_)
+			? $self->_mk_rule->all($_)
 			: "Path::Class::File"->new($_)
 	} @$args;
-	@files = "Path::Class::Rule"->new->perl_file->all unless @$args;
+	@files = $self->_mk_rule->all unless @$args;
 	
 	my $deps = $self->_get_deps(@files);
 	$self->_whittle($deps) if exists $opt->{skipcore};
 	print $self->_output($deps, $opt->{format});
+}
+
+sub _mk_rule
+{
+	"Path::Class::Rule"->new->skip_vcs->nonempty->perl_file
 }
 
 sub _get_deps

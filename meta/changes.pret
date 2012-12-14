@@ -4,3 +4,9 @@
 	issued  2012-12-13;
 	label   "Initial release".
 
+`P5U-Command-Deps 0.002 cpan:TOBYINK`
+	issued  2012-12-14;
+	changeset [
+		item "When recursing directories, skip VCS crud."^^Change;
+	].
+
