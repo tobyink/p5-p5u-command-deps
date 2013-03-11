@@ -65,10 +65,11 @@ sub _get_deps
 	for my $_ (@files)
 	{
 		my $R
-			= /.PL$/        ? $BUILD
-			: /\bxt\b.+\.t/ ? $XTEST
-			: /\.t/         ? $TEST
-			:                 $RUNTIME;
+			= m{\.PL$}             ? $BUILD
+			: m{(^|[/\\])xt[/\\]}  ? $XTEST
+			: m{(^|[/\\])t[/\\]}   ? $TEST
+			: m{\.t$}              ? $TEST
+			:                        $RUNTIME;
 		$R->add_requirements( $scan->scan_file("$_") );
 	}
 	
