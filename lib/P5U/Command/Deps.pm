@@ -272,6 +272,7 @@ L<http://rt.cpan.org/Dist/Display.html?Queue=P5U-Command-Deps>.
 
 L<P5U>.
 
+L<Class::Discover>,
 L<Perl::PrereqScanner>,
 L<App::PrereqGrapher>.
 
