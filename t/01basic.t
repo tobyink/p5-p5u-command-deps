@@ -18,3 +18,4 @@ the same terms as the Perl 5 programming language system itself.
 use Test::More tests => 1;
 BEGIN { use_ok('P5U::Command::Deps') };
 
+use P5U::Command::Deps;

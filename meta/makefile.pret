@@ -4,11 +4,12 @@
 	perl_version_from m`P5U::Command::Deps`;
 	version_from      m`P5U::Command::Deps`;
 	readme_from       m`P5U::Command::Deps`;
-	test_requires     p`Test::More 0.61` ;
-	requires p`P5U 0`;
-	requires p`Path::Class::Dir 0`;
-	requires p`Path::Class::File 0`;
-	requires p`Path::Class::Rule 0`;
-	requires p`Perl::PrereqScanner 0`;
-	.
+	requires          p`Class::Discover 0`;
+	requires          p`List::MoreUtils 0`;
+	requires          p`P5U 0`;
+	requires          p`Path::Class::Dir 0`;
+	requires          p`Path::Class::File 0`;
+	requires          p`Path::Class::Rule 0`;
+	requires          p`Perl::PrereqScanner 0`;
+.
 

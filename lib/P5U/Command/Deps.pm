@@ -17,8 +17,9 @@ use constant usage_desc    => q  <%c deps %o FILE(s)?>;
 sub opt_spec
 {
 	return (
-		[ 'format|f=s'   => 'output format (text, mi, pretdsl)' ],
-		[ 'skipcore|c'   => 'skip core modules' ],
+		[ 'format|f=s'            => 'output format (text, mi, pretdsl)' ],
+		[ 'skip-core|skipcore|c'  => 'skip core modules' ],
+		[ 'keep-provided|k'       => "don't skip provided modules" ],
 	);
 }
 
@@ -38,7 +39,8 @@ sub execute
 	@files = $self->_mk_rule->all unless @$args;
 	
 	my $deps = $self->_get_deps(@files);
-	$self->_whittle($deps) if exists $opt->{skipcore};
+	$self->_whittle_provides($deps, \@files) unless $opt->keep_provided;
+	$self->_whittle_corelist($deps) if $opt->skip_core;
 	print $self->_output($deps, $opt->{format});
 }
 
@@ -78,14 +80,14 @@ sub _get_deps
 	};
 }
 
-sub _whittle
+sub _whittle_corelist
 {
 	my ($self, $deps, $perlver) = @_;
 	
 	require Module::CoreList;
 	
 	$perlver //= 0 + $deps->{RUNTIME}->as_string_hash->{perl};
-	$self->usage_error("no Perl version listed, so cannot --skipcore")
+	$self->usage_error("no Perl version listed, so cannot --skip-core")
 		unless $Module::CoreList::version{$perlver};
 	my $core = bless $Module::CoreList::version{$perlver}, 'Module::CoreList';
 	
@@ -109,6 +111,44 @@ sub _whittle
 				$d->clear_requirement($module);
 			}
 		}
+	}
+}
+
+sub _whittle_provides
+{
+	my ($self, $deps, $files) = @_;
+	
+	require Class::Discover;
+	require List::MoreUtils;
+	
+	my @keywords = qw( package );
+	
+	for my $d (values %$deps)
+	{
+		my $hashref = $d->as_string_hash;
+		push @keywords => qw( class role )
+			if exists $hashref->{"MooseX::Declare"};
+		push @keywords => qw( class role exception )
+			if exists $hashref->{"MooseX::DeclareX"};
+		push @keywords => qw( class role application controller controller_role view model )
+			if exists $hashref->{"CatalystX::Declare"};
+	}
+	
+	my $packages = "Class::Discover"->discover_classes({
+		files    => $files,
+		keywords => [ List::MoreUtils::uniq(@keywords) ],
+	});
+	
+	my $modules = [
+		map { s{/}{::}g; $_ }
+		map { m{^lib/(.+)\.pm$} ? $1 : () }
+		@$files
+	];
+	
+	for my $d (values %$deps)
+	{
+		$d->clear_requirement($_) for map { keys %$_ } @$packages;
+		$d->clear_requirement($_) for @$modules;
 	}
 }
 
@@ -208,9 +248,14 @@ then the current directory is assumed.
 It uses file naming conventions to attempt to classify dependencies as
 "runtime", "test" and "build".
 
-With the C<< --skipcore >> option, will skip dependencies that are satisfied
-by Perl core. This requires at least one C<< use VERSION >> line in the files
-being scanned.
+Unless using the C<< --keep-provided >> option, will use Class::Discover to
+discover what packages are provided by the codebase, and skip those. For
+example, if there's a lib/Foo/Bar.pm providing Foo::Bar, and the test suite
+loads that module, it won't be included as a test_requires dependency.
+
+With the C<< --skip-core >> option, will also skip dependencies that are
+satisfied by Perl core. This requires at least one C<< use VERSION >> line
+in the files being scanned.
 
 Output is in the text format shown above, but with C<< --format=mi >>
 will attempt to output L<Module::Install>-style requirements. With
