@@ -10,3 +10,11 @@
 		item "When recursing directories, skip VCS crud."^^Change;
 	].
 
+`P5U-Command-Deps 0.003 cpan:TOBYINK`
+	issued  2013-03-11;
+	changeset [
+		item "Don't list packages provided by scanned codebase as being requirements."^^Change;
+		item "New '--keep-provides' option."^^Addition;
+		item "Changed '--skipcore' option to '--skip-core'."^^Change;
+		item "Better differentiation between build/runtime/test/xt."^^Change;
+	].
