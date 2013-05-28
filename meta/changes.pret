@@ -18,3 +18,9 @@
 		item "Changed '--skipcore' option to '--skip-core'."^^Change;
 		item "Better differentiation between build/runtime/test/xt."^^Change;
 	].
+
+`P5U-Command-Deps 0.004 cpan:TOBYINK`
+	issued  2013-05-28;
+	changeset [
+		item "Eschew my $_."^^Update;
+	].
