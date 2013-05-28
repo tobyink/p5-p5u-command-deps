@@ -62,7 +62,7 @@ sub _get_deps
 	require Perl::PrereqScanner;
 	my $scan = "Perl::PrereqScanner"->new;
 	
-	for my $_ (@files)
+	for (@files)
 	{
 		my $R
 			= m{\.PL$}             ? $BUILD
