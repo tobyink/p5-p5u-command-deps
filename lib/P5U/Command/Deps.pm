@@ -27,14 +27,10 @@ sub execute
 {
 	my ($self, $opt, $args) = @_;
 	
-	require Path::Class::Rule;
-	require Path::Class::File;
-	require Path::Class::Dir;
-	
 	my @files = map {
 		-d $_
 			? $self->_mk_rule->all($_)
-			: "Path::Class::File"->new($_)
+			: "Path::Tiny"->new($_)
 	} @$args;
 	@files = $self->_mk_rule->all unless @$args;
 	
@@ -46,7 +42,8 @@ sub execute
 
 sub _mk_rule
 {
-	"Path::Class::Rule"->new->skip_vcs->nonempty->perl_file
+	require Path::Iterator::Rule;
+	"Path::Iterator::Rule"->new->skip_vcs->nonempty->perl_file;
 }
 
 sub _get_deps
