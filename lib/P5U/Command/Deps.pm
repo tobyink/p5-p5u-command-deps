@@ -7,7 +7,7 @@ use P5U-command;
 
 BEGIN {
 	$P5U::Command::Deps::AUTHORITY = 'cpan:TOBYINK';
-	$P5U::Command::Deps::VERSION   = '0.004';
+	$P5U::Command::Deps::VERSION   = '0.005';
 }
 
 use constant abstract      => q  <scan Perl source code for dependencies>;

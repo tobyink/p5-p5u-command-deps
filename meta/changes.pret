@@ -24,3 +24,9 @@
 	changeset [
 		item "Eschew my $_."^^Update;
 	].
+
+`P5U-Command-Deps 0.005 cpan:TOBYINK`
+	issued  2013-06-17;
+	changeset [
+		item "Switch from Path::Class::Rule to Path::Iterator::Rule, and drop Path::Class usage."^^Update;
+	].
